@@ -2,8 +2,21 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, signInWithPopup } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
+import { Language, Theme, translations } from '../lib/i18n';
 
-export interface PortfolioData {
+export interface ProjectData {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  highlights: string[];
+  tags: string[];
+  confidential: boolean;
+  demoLink?: string;
+  screenshots: string[];
+}
+
+export interface LocalizedPortfolioData {
   hero: {
     greeting: string;
     title: string;
@@ -19,15 +32,7 @@ export interface PortfolioData {
     category: string;
     items: string[];
   }[];
-  projects: {
-    id: string;
-    title: string;
-    subtitle: string;
-    description: string;
-    highlights: string[];
-    tags: string[];
-    link: string;
-  }[];
+  projects: ProjectData[];
   experiences: {
     id: string;
     company: string;
@@ -43,7 +48,13 @@ export interface PortfolioData {
   };
 }
 
-const defaultData: PortfolioData = {
+export interface PortfolioData {
+  en: LocalizedPortfolioData;
+  es: LocalizedPortfolioData;
+  fr: LocalizedPortfolioData;
+}
+
+const defaultLocalizedData: LocalizedPortfolioData = {
   hero: {
     greeting: "Hi, I'm Aravind 👋",
     title: "Full Stack Engineer building secure & scalable web applications",
@@ -82,7 +93,8 @@ const defaultData: PortfolioData = {
         "Created dashboards using Highcharts"
       ],
       tags: ["PHP", "Security", "Highcharts"],
-      link: "#"
+      confidential: true,
+      screenshots: ["https://picsum.photos/seed/lakshya/800/450"]
     },
     {
       id: "2",
@@ -96,7 +108,8 @@ const defaultData: PortfolioData = {
         "Enabled future-ready system architecture"
       ],
       tags: ["Node.js", "Go", "Microservices"],
-      link: "#"
+      confidential: false,
+      screenshots: ["https://picsum.photos/seed/legacy/800/450"]
     },
     {
       id: "3",
@@ -105,7 +118,8 @@ const defaultData: PortfolioData = {
       description: "Built from scratch with UUID security and dynamic PDF generation.",
       highlights: ["UUID security", "Dynamic PDF generation"],
       tags: ["Full Stack", "PDF"],
-      link: "#"
+      confidential: true,
+      screenshots: ["https://picsum.photos/seed/rooftech/800/450"]
     },
     {
       id: "4",
@@ -114,7 +128,9 @@ const defaultData: PortfolioData = {
       description: "Full-stack modern app with payment integration and headless CMS.",
       highlights: ["Payment integration", "Headless CMS (Sanity)"],
       tags: ["Next.js", "Stripe", "Sanity"],
-      link: "#"
+      confidential: false,
+      demoLink: "https://aravindkumar-electronic.vercel.app/",
+      screenshots: ["https://picsum.photos/seed/ecommerce/800/450"]
     },
     {
       id: "5",
@@ -123,7 +139,8 @@ const defaultData: PortfolioData = {
       description: "Booking + subscription system with Flask API integration.",
       highlights: ["Flask API integration"],
       tags: ["Flask", "Booking"],
-      link: "#"
+      confidential: true,
+      screenshots: ["https://picsum.photos/seed/jays/800/450"]
     }
   ],
   experiences: [
@@ -164,11 +181,24 @@ const defaultData: PortfolioData = {
   }
 };
 
+const defaultData: PortfolioData = {
+  en: defaultLocalizedData,
+  es: { ...defaultLocalizedData, hero: { ...defaultLocalizedData.hero, greeting: "Hola, soy Aravind 👋", title: "Ingeniero Full Stack construyendo aplicaciones seguras" } },
+  fr: { ...defaultLocalizedData, hero: { ...defaultLocalizedData.hero, greeting: "Bonjour, je suis Aravind 👋", title: "Ingénieur Full Stack créant des applications sécurisées" } }
+};
+
 interface PortfolioContextType {
   data: PortfolioData | null;
   loading: boolean;
   user: User | null;
   isAdmin: boolean;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  mode: 'light' | 'dark';
+  setMode: (mode: 'light' | 'dark') => void;
+  t: typeof translations['en'];
   login: () => Promise<void>;
   logout: () => Promise<void>;
   updateData: (newData: PortfolioData) => Promise<void>;
@@ -180,8 +210,25 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [data, setData] = useState<PortfolioData | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [language, setLanguage] = useState<Language>('en');
+  const [theme, setTheme] = useState<Theme>('emerald');
+  const [mode, setMode] = useState<'light' | 'dark'>('dark');
 
   const isAdmin = user?.email === 'aravind17g08@gmail.com';
+  const t = translations[language];
+
+  useEffect(() => {
+    // Apply theme to body
+    document.body.className = theme === 'emerald' ? '' : `theme-${theme}`;
+  }, [theme]);
+
+  useEffect(() => {
+    if (mode === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [mode]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -192,14 +239,17 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   useEffect(() => {
-    const docRef = doc(db, 'portfolio', 'main');
+    const docRef = doc(db, 'portfolio', 'main_v2');
     
-    // Initialize default data if it doesn't exist
-    getDoc(docRef).then((snapshot) => {
-      if (!snapshot.exists()) {
-        setDoc(docRef, defaultData).catch(console.error);
-      }
-    });
+    // Only attempt to initialize default data if we are an admin
+    // Public users will just read the data via onSnapshot
+    if (isAdmin) {
+      getDoc(docRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+          setDoc(docRef, defaultData).catch(console.error);
+        }
+      }).catch(console.error);
+    }
 
     const unsubscribeData = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -210,11 +260,13 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setLoading(false);
     }, (error) => {
       console.error("Error fetching portfolio data:", error);
+      // Fallback to default data if there's a permission error or it doesn't exist yet
+      setData(defaultData);
       setLoading(false);
     });
 
     return () => unsubscribeData();
-  }, []);
+  }, [isAdmin]);
 
   const login = async () => {
     try {
@@ -235,7 +287,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const updateData = async (newData: PortfolioData) => {
     if (!isAdmin) throw new Error("Unauthorized");
     try {
-      await setDoc(doc(db, 'portfolio', 'main'), newData);
+      await setDoc(doc(db, 'portfolio', 'main_v2'), newData);
     } catch (error) {
       console.error("Update failed:", error);
       throw error;
@@ -243,7 +295,7 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   return (
-    <PortfolioContext.Provider value={{ data, loading, user, isAdmin, login, logout, updateData }}>
+    <PortfolioContext.Provider value={{ data, loading, user, isAdmin, language, setLanguage, theme, setTheme, mode, setMode, t, login, logout, updateData }}>
       {children}
     </PortfolioContext.Provider>
   );

@@ -1,0 +1,65 @@
+export const translations = {
+  en: {
+    viewWork: "View My Work",
+    hireMe: "Hire Me",
+    resume: "Resume",
+    aboutMe: "About Me",
+    specializedExpertise: "Specialized expertise",
+    techArsenal: "Technical Arsenal",
+    featuredWork: "Featured Work",
+    viewLive: "View Live App",
+    confidential: "Confidential / No Demo",
+    expTimeline: "Experience Timeline",
+    services: "Services & Expertise",
+    adminLogin: "Admin Login",
+    signInGoogle: "Sign in with Google",
+    accessDenied: "Access denied. You must be the administrator to access this area.",
+    logout: "Logout",
+    saveChanges: "Save Changes",
+    adminDashboard: "Admin Dashboard",
+    allRightsReserved: "All rights reserved."
+  },
+  es: {
+    viewWork: "Ver mi trabajo",
+    hireMe: "Contrátame",
+    resume: "Currículum",
+    aboutMe: "Sobre mí",
+    specializedExpertise: "Experiencia especializada",
+    techArsenal: "Arsenal Técnico",
+    featuredWork: "Proyectos Destacados",
+    viewLive: "Ver App en Vivo",
+    confidential: "Confidencial / Sin Demo",
+    expTimeline: "Línea de Tiempo",
+    services: "Servicios y Experiencia",
+    adminLogin: "Acceso de Administrador",
+    signInGoogle: "Iniciar sesión con Google",
+    accessDenied: "Acceso denegado. Debes ser el administrador para acceder a esta área.",
+    logout: "Cerrar sesión",
+    saveChanges: "Guardar Cambios",
+    adminDashboard: "Panel de Administrador",
+    allRightsReserved: "Todos los derechos reservados."
+  },
+  fr: {
+    viewWork: "Voir mon travail",
+    hireMe: "Engagez-moi",
+    resume: "CV",
+    aboutMe: "À propos de moi",
+    specializedExpertise: "Expertise spécialisée",
+    techArsenal: "Arsenal Technique",
+    featuredWork: "Projets en Vedette",
+    viewLive: "Voir l'App en Direct",
+    confidential: "Confidentiel / Pas de Démo",
+    expTimeline: "Chronologie de l'Expérience",
+    services: "Services et Expertise",
+    adminLogin: "Connexion Administrateur",
+    signInGoogle: "Se connecter avec Google",
+    accessDenied: "Accès refusé. Vous devez être l'administrateur pour accéder à cette zone.",
+    logout: "Se déconnecter",
+    saveChanges: "Enregistrer",
+    adminDashboard: "Tableau de Bord",
+    allRightsReserved: "Tous droits réservés."
+  }
+};
+
+export type Language = 'en' | 'es' | 'fr';
+export type Theme = 'emerald' | 'blue' | 'purple' | 'rose';

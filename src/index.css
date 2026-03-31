@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --primary: #10b981; /* emerald-500 */
+    --primary-hover: #34d399; /* emerald-400 */
+    --primary-bg: rgba(16, 185, 129, 0.1);
+    --primary-border: rgba(16, 185, 129, 0.2);
+    --primary-glow: rgba(16, 185, 129, 0.2);
+  }
+  
+  .theme-blue {
+    --primary: #3b82f6; /* blue-500 */
+    --primary-hover: #60a5fa; /* blue-400 */
+    --primary-bg: rgba(59, 130, 246, 0.1);
+    --primary-border: rgba(59, 130, 246, 0.2);
+    --primary-glow: rgba(59, 130, 246, 0.2);
+  }
+  
+  .theme-purple {
+    --primary: #a855f7; /* purple-500 */
+    --primary-hover: #c084fc; /* purple-400 */
+    --primary-bg: rgba(168, 85, 247, 0.1);
+    --primary-border: rgba(168, 85, 247, 0.2);
+    --primary-glow: rgba(168, 85, 247, 0.2);
+  }
+  
+  .theme-rose {
+    --primary: #f43f5e; /* rose-500 */
+    --primary-hover: #fb7185; /* rose-400 */
+    --primary-bg: rgba(244, 63, 94, 0.1);
+    --primary-border: rgba(244, 63, 94, 0.2);
+    --primary-glow: rgba(244, 63, 94, 0.2);
+  }
+}

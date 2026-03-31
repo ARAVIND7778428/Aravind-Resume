@@ -2,27 +2,6 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: portfolio
-    // Document ID: main
-    // Fields:
-    //   - hero: map
-    //   - trustStats: list
-    //   - about: map
-    //   - skills: list
-    //   - projects: list
-    //   - experiences: list
-    //   - services: list
-    //   - cta: map
-    //
-    // ===============================================================
-
-    // ===============================================================
-    // Helper Functions
-    // ===============================================================
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -32,19 +11,9 @@ service cloud.firestore {
         (request.auth.token.email == "aravind17g08@gmail.com" && request.auth.token.email_verified == true);
     }
 
-    function isValidPortfolioData(data) {
-      return data.keys().hasAll(['hero', 'about', 'projects']) &&
-             data.hero is map &&
-             data.about is map &&
-             data.projects is list;
-    }
-
     match /portfolio/{docId} {
-      // Public read access for the portfolio website
       allow read: if true;
-      allow create: if isAdmin() && isValidPortfolioData(request.resource.data);
-      allow update: if isAdmin() && isValidPortfolioData(request.resource.data);
-      allow delete: if false; // Prevent deletion of the main portfolio document
+      allow write: if isAdmin();
     }
   }
 }
