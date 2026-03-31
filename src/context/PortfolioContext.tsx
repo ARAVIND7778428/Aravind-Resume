@@ -17,6 +17,7 @@ export interface ProjectData {
 }
 
 export interface LocalizedPortfolioData {
+  tabTitle?: string;
   hero: {
     greeting: string;
     title: string;
@@ -55,6 +56,7 @@ export interface PortfolioData {
 }
 
 const defaultLocalizedData: LocalizedPortfolioData = {
+  tabTitle: "Aravind | Full Stack Engineer",
   hero: {
     greeting: "Hi, I'm Aravind 👋",
     title: "Full Stack Engineer building secure & scalable web applications",
@@ -183,8 +185,8 @@ const defaultLocalizedData: LocalizedPortfolioData = {
 
 const defaultData: PortfolioData = {
   en: defaultLocalizedData,
-  es: { ...defaultLocalizedData, hero: { ...defaultLocalizedData.hero, greeting: "Hola, soy Aravind 👋", title: "Ingeniero Full Stack construyendo aplicaciones seguras" } },
-  fr: { ...defaultLocalizedData, hero: { ...defaultLocalizedData.hero, greeting: "Bonjour, je suis Aravind 👋", title: "Ingénieur Full Stack créant des applications sécurisées" } }
+  es: { ...defaultLocalizedData, tabTitle: "Aravind | Ingeniero Full Stack", hero: { ...defaultLocalizedData.hero, greeting: "Hola, soy Aravind 👋", title: "Ingeniero Full Stack construyendo aplicaciones seguras" } },
+  fr: { ...defaultLocalizedData, tabTitle: "Aravind | Ingénieur Full Stack", hero: { ...defaultLocalizedData.hero, greeting: "Bonjour, je suis Aravind 👋", title: "Ingénieur Full Stack créant des applications sécurisées" } }
 };
 
 interface PortfolioContextType {
@@ -229,6 +231,23 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       document.documentElement.classList.remove('dark');
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (data) {
+      const title = data[language]?.tabTitle || data.en?.tabTitle || "Aravind | Full Stack Engineer";
+      document.title = title;
+      
+      // Update meta tags for SEO and social sharing
+      const metaTitle = document.querySelector('meta[name="title"]');
+      if (metaTitle) metaTitle.setAttribute('content', title);
+      
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', title);
+      
+      const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+      if (twitterTitle) twitterTitle.setAttribute('content', title);
+    }
+  }, [data, language]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {

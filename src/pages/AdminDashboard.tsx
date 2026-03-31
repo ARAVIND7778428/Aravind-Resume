@@ -5,7 +5,7 @@ import { Save, LogOut, ArrowLeft, Loader2, Globe, Plus, Trash2, Image as ImageIc
 import { Language } from '../lib/i18n';
 
 export default function AdminDashboard() {
-  const { data, updateData, logout, isAdmin, loading: contextLoading } = usePortfolio();
+  const { data, updateData, logout, isAdmin, loading: contextLoading, language } = usePortfolio();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<PortfolioData | null>(null);
   const [saving, setSaving] = useState(false);
@@ -22,6 +22,19 @@ export default function AdminDashboard() {
       setFormData(JSON.parse(JSON.stringify(data))); // Deep copy
     }
   }, [data]);
+
+  useEffect(() => {
+    const tabTitle = formData?.[editLang]?.tabTitle;
+    if (tabTitle) {
+      document.title = tabTitle;
+    }
+    
+    return () => {
+      if (data) {
+        document.title = data[language]?.tabTitle || data.en?.tabTitle || "Aravind | Full Stack Engineer";
+      }
+    };
+  }, [formData, editLang, data, language]);
 
   if (contextLoading || !formData) {
     return (
@@ -99,6 +112,23 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid gap-8">
+          {/* General Settings */}
+          <section className="space-y-6 bg-white dark:bg-zinc-900/30 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+            <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">General Settings</h2>
+            <div className="grid gap-4">
+              <div>
+                <label className="block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1">Chrome Tab Title</label>
+                <input
+                  type="text"
+                  value={currentLangData.tabTitle || ''}
+                  onChange={(e) => updateLangData(d => { d.tabTitle = e.target.value })}
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[var(--primary)]"
+                  placeholder="e.g. Aravind | Full Stack Engineer"
+                />
+              </div>
+            </div>
+          </section>
+
           {/* Hero Section */}
           <section className="space-y-6 bg-white dark:bg-zinc-900/30 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
             <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200">Hero Section</h2>
