@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "PortfolioData": {
+      "title": "Portfolio Data",
+      "description": "The main data structure for the portfolio website.",
+      "type": "object",
+      "properties": {
+        "hero": {
+          "type": "object",
+          "properties": {
+            "greeting": { "type": "string" },
+            "title": { "type": "string" },
+            "subtitle": { "type": "string" },
+            "imageUrl": { "type": "string" }
+          }
+        },
+        "trustStats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "value": { "type": "string" }
+            }
+          }
+        },
+        "about": {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string" },
+            "highlights": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": { "type": "string" },
+              "items": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "subtitle": { "type": "string" },
+              "description": { "type": "string" },
+              "highlights": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "tags": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "link": { "type": "string" }
+            }
+          }
+        },
+        "experiences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "company": { "type": "string" },
+              "role": { "type": "string" },
+              "description": { "type": "string" },
+              "highlights": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "cta": {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string" },
+            "email": { "type": "string" },
+            "whatsapp": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/portfolio/main": {
+      "schema": { "$ref": "#/entities/PortfolioData" },
+      "description": "The singleton document holding all portfolio data."
+    }
+  }
+}
